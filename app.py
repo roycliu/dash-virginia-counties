@@ -6,6 +6,12 @@ from dash.dependencies import Input, Output, State
 import plotly.figure_factory as ff
 import pandas as pd
 
+# Read in the USA counties shape files
+from urllib.request import urlopen
+import json
+with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
+    counties = json.load(response)
+
 ########### Define a few variables ######
 
 tabtitle = 'Virginia Counties'
@@ -39,7 +45,7 @@ app.layout = html.Div(children=[
                 dcc.Dropdown(
                     id='stats-drop',
                     options=[{'label': i, 'value': i} for i in varlist],
-                    value='TotalPop'
+                    value='MeanCommute'
                 ),
         ], className='three columns'),
         # right side
@@ -60,11 +66,21 @@ app.layout = html.Div(children=[
 @app.callback(Output('va-map', 'figure'),
               [Input('stats-drop', 'value')])
 def display_results(selected_value):
-    fig = ff.create_choropleth(
-                            fips=df['FIPS'],
-                            values=df[selected_value],
-                            scope=['VA'],
-                            county_outline={'color': 'rgb(255,255,255)', 'width': 0.5})
+    valmin=df[selected_value].min()
+    valmax=df[selected_value].max()
+    fig = go.Figure(go.Choroplethmapbox(geojson=counties,
+                                    locations=df['FIPS'],
+                                    z=df[selected_value],
+                                    colorscale='Blues',
+                                    text=df['County'],
+                                    zmin=valmin,
+                                    zmax=valmax,
+                                    marker_line_width=0))
+    fig.update_layout(mapbox_style="carto-positron",
+                      mapbox_zoom=5.8, mapbox_center = {"lat": 38.0293, "lon": -79.4428})
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+
+# https://community.plot.ly/t/what-colorscales-are-available-in-plotly-and-which-are-the-default/2079
     return fig
 
 
