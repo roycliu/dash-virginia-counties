@@ -9,7 +9,7 @@ import pandas as pd
 ########### Define a few variables ######
 
 tabtitle = 'Virginia Counties'
-sourceurl = 'https://www.kaggle.com/muonneutrino/us-census-demographic-data/download'
+sourceurl = 'https://www.kaggle.com/muonneutrino/us-census-demographic-data'
 githublink = 'https://github.com/austinlasseter/dash-template'
 varlist=['TotalPop', 'Men', 'Women', 'Hispanic',
        'White', 'Black', 'Native', 'Asian', 'Pacific', 'VotingAgeCitizen',
